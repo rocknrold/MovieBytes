@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/groupPages">
+        <item
+            android:title="Pages"
+            android:id="@+id/pages">
+            <menu>
+                <item
+                    android:id="@+id/movie"
+                    android:title="ls Movies"
+                    android:icon="@drawable/ic_baseline_movie_24"/>
+                <item
+                    android:id="@+id/actor"
+                    android:title="ls Actors"
+                    android:icon="@drawable/ic_baseline_recent_actors_24"/>
+            </menu>
+        </item>
+    </group>
+
+    <group android:id="@+id/cruds"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/crud"
+            android:title="Operations">
+            <menu>
+                <item
+                    android:id="@+id/crudMovie"
+                    android:title="[flag] Movie"
+                    android:icon="@drawable/ic_baseline_construction_24"/>
+                <item
+                    android:id="@+id/crudActor"
+                    android:title="[flag] Actor"
+                    android:icon="@drawable/ic_baseline_construction_24"/>
+            </menu>
+        </item>
+    </group>
+
+    <group android:id="@+id/userAction"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/userActionItem"
+            android:title="Root">
+            <menu>
+                <item
+                    android:id="@+id/logout"
+                    android:title="sudo Logout"
+                    android:icon="@drawable/ic_baseline_logout_24"/>
+            </menu>
+        </item>
+    </group>
+
+</menu>
