@@ -33,15 +33,17 @@ public class MainActivity extends AppCompatActivity {
         logPref = LoginPreference.getInstance(this);
         Toast.makeText(MainActivity.this, logPref.getString("email", "Not set"), Toast.LENGTH_LONG).show();
 
+//      Set the toolbar for this activity only
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//      Set the drawer and create a HAMBURGER actionbar drawer to toggle for closing and opening it.
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,R.string.open, R.string.close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
+//      Setup the navigation menu to listen on item click inside the drawer
         NavigationView nav_view = findViewById(R.id.nav_view);
         nav_view.setNavigationItemSelectedListener(this::onMenuItemSelected);
 
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+//  respond to the item selected inside the drawer,
+//  just a simple switch statement to get the id of selected menu item
     private boolean onMenuItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.movie:
@@ -69,13 +73,15 @@ public class MainActivity extends AppCompatActivity {
                 logout();
                 break;
         }
-
+//      close drawer after select
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
     public void onBackPressed() {
+//      toggle state of drawer if open or not
+//       the GravityCompat.START means only the position of drawer start means left
         if(drawer.isDrawerOpen(GravityCompat.START)){
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -83,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+//    dialog for logout confirmation this will prevent unintended clicked of logout
     private void logout() {
         AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Logout")

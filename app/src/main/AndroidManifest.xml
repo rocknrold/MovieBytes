@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MovieBytes"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ShowDetails.MovieDetails"></activity>
+        <activity android:name=".ShowDetails.ActorDetails"></activity>
+        <activity android:name=".ShowDetails.MovieDetails" />
         <activity android:name=".crud.ActorActivity" />
         <activity android:name=".crud.MovieActivity" />
         <activity

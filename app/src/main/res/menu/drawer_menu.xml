@@ -35,6 +35,10 @@
                     android:id="@+id/crudActor"
                     android:title="[flag] Actor"
                     android:icon="@drawable/ic_baseline_construction_24"/>
+                <item
+                    android:id="@+id/crudProducer"
+                    android:title="[flag] Producer"
+                    android:icon="@drawable/ic_baseline_construction_24"/>
             </menu>
         </item>
     </group>

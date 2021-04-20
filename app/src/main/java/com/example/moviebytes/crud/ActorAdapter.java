@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moviebytes.R;
 import com.example.moviebytes.models.Actor;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -46,6 +47,10 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ActorHolder>
     public void onBindViewHolder(@NonNull ActorHolder holder, int position) {
         Actor ac = actors.get(position);
 
+        holder.tvActorName.setText(ac.getName());
+        holder.tvActorNote.setText(ac.getNote());
+
+        Picasso.get().load(ac.getPoster()).fit().centerCrop().into(holder.ivActorPoster);
         
     }
 
