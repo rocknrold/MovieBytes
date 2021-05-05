@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.moviebytes.LoginPreference;
 import com.example.moviebytes.R;
+import com.example.moviebytes.crud.MovieActivity;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -28,7 +31,8 @@ import java.util.Map;
 
 public class MovieDetails extends AppCompatActivity {
 
-    private final String filmUrl = "http://192.168.0.26:8000/api/film/show/";
+    private final String filmUrl = "http://192.168.0.26:8000/api/film/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +67,12 @@ public class MovieDetails extends AppCompatActivity {
                             }
                             tvActors.setText(actorList);
 
-                            Picasso.get().load(response.getString("poster")).fit().centerInside().into(ivPoster);
+                            String photo_url = getString(R.string.PUBLIC_URL);
+                            if(response.getString("poster").contains("storage/images/")){
+                                Picasso.get().load(photo_url.concat(response.getString("poster"))).fit().centerInside().into(ivPoster);
+                            }else {
+                                Picasso.get().load(response.getString("poster")).fit().centerInside().into(ivPoster);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -85,5 +94,16 @@ public class MovieDetails extends AppCompatActivity {
         };
 
         queue.add(request);
+
+        Button btnEdit = findViewById(R.id.btnEmovie);
+        btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MovieDetails.this, MovieActivity.class);
+                intent.putExtra("MOVIE_ID", movieId);
+                startActivity(intent);
+            }
+        });
+
     }
 }

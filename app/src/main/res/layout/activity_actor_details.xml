@@ -78,10 +78,19 @@
                     android:layout_margin="8dp"
                     android:orientation="horizontal">
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnActorEdit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:text="Edit"
+                        android:text="PHOTO"
+                        style="?attr/borderlessButtonStyle"
+                        />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnActorEditSave"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="Save"
                         style="?attr/borderlessButtonStyle"
                         />
                 </LinearLayout>

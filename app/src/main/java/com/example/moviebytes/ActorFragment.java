@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -26,12 +27,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.moviebytes.ShowDetails.ActorDetails;
 import com.example.moviebytes.crud.ActorAdapter;
 import com.example.moviebytes.crud.MovieAdapter;
+import com.example.moviebytes.crud.ProducerActivity;
 import com.example.moviebytes.models.Actor;
 import com.example.moviebytes.models.Movie;
+import com.example.moviebytes.models.Producer;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -45,8 +49,10 @@ import java.util.Map;
 
 public class ActorFragment extends Fragment implements ActorAdapter.OnActorClickListener {
 
+    private static final int ACTOR_DETAILS_REQUEST_CODE = 2;
     private List<Actor> actorList = new ArrayList<>();
     private RecyclerView rvActors;
+    private ActorAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,7 +93,7 @@ public class ActorFragment extends Fragment implements ActorAdapter.OnActorClick
                         e.printStackTrace();
                     }
                 }
-                ActorAdapter adapter = new ActorAdapter(context, actorList);
+                adapter = new ActorAdapter(context, actorList);
                 rvActors.setAdapter(adapter);
                 rvActors.setLayoutManager(new LinearLayoutManager(context));
                 adapter.setOnActorClickListener(ActorFragment.this);
@@ -116,14 +122,68 @@ public class ActorFragment extends Fragment implements ActorAdapter.OnActorClick
         Actor actor = actorList.get(position);
         intent.putExtra("actor_id", actor.getActorId());
         startActivity(intent);
+//        startActivityForResult(intent, ACTOR_DETAILS_REQUEST_CODE);
 //        Dialog box or intent its okay both are working!!!
 //        ActorDetailsDialog(actor.getActorId());
+    }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+////        super.onActivityResult(requestCode, resultCode, data);
+//        if(requestCode == ACTOR_DETAILS_REQUEST_CODE){
+//            if(resultCode == getActivity().RESULT_OK) {
+//                System.out.println(data.getExtras().toString());
+//                Toast.makeText(getContext(), data.getStringExtra("name"), Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
+
+    @Override
+    public void OnActorLongClick(int position) {
+        Actor ac = actorList.get(position);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext())
+                .setTitle("DELETE")
+                .setMessage("Do you want to delete this actor?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        RequestQueue queue = Volley.newRequestQueue(getContext());
+                        String url = getString(R.string.BASE_URL)+"actor/".concat(String.valueOf(ac.getActorId()));
+                        StringRequest request = new StringRequest(Request.Method.DELETE, url, response -> {
+                            try {
+                                JSONObject prodDelete = new JSONObject(response);
+                                if(prodDelete.getInt("status") == 200){
+                                    actorList.remove(position);
+                                    adapter.notifyItemRemoved(position);
+                                    Toast.makeText(getContext(), prodDelete.getString("success"), Toast.LENGTH_LONG).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }, error -> {
+                            error.printStackTrace();
+                        }){
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> headers = new HashMap<>();
+                                headers.put("Authorization", "Bearer "+ LoginPreference.getInstance(getActivity()).getString("access_token", null));
+                                System.out.println(headers);
+                                return headers;
+                            }
+                        };
+                        queue.add(request);
+                    }
+                })
+                .setNegativeButton("No", (dialog1, which) -> dialog1.dismiss())
+                .create();
+
+        dialog.show();
     }
 
     private void ActorDetailsDialog(int position) {
             RequestQueue queue = Volley.newRequestQueue(getContext());
 
-            String url = getString(R.string.BASE_URL)+"actor/show/".concat(String.valueOf(position));
+            String url = getString(R.string.BASE_URL)+"actor/".concat(String.valueOf(position));
             System.out.println(url);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                     url,

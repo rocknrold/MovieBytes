@@ -24,6 +24,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
 
     public interface OnMovieClickListener {
         void OnMovieItemClick(int position);
+        void OnMovieItemLongClick(int position);
     }
 
     public void setOnMovieClickListener(OnMovieClickListener listener) {
@@ -50,7 +51,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         if(mv.getPoster().equals("null")){
             Picasso.get().load(R.drawable.no_cover).into(holder.ivPoster);
         } else {
-            Picasso.get().load(mv.getPoster()).into(holder.ivPoster);
+            if(mv.getPoster().contains("storage/images/")){
+                Picasso.get().load(holder.photo_path.concat(mv.getPoster())).into(holder.ivPoster);
+            } else {
+                Picasso.get().load(mv.getPoster()).into(holder.ivPoster);
+            }
         }
 
         holder.tvTitle.setText(mv.getName());
@@ -66,12 +71,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
     public class MovieHolder extends RecyclerView.ViewHolder {
         ImageView ivPoster;
         TextView tvTitle, tvInfo;
+        String photo_path;
 
         public MovieHolder(@NonNull View itemView) {
             super(itemView);
             ivPoster = itemView.findViewById(R.id.ivMoviePoster);
             tvTitle = itemView.findViewById(R.id.tvMovieTitle);
             tvInfo = itemView.findViewById(R.id.tvMovieInfo);
+            photo_path = itemView.getContext().getString(R.string.PUBLIC_URL);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -82,6 +89,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
                             movieListener.OnMovieItemClick(position);
                         }
                     }
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(movieListener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            movieListener.OnMovieItemLongClick(position);
+                        }
+                    }
+                    return true;
                 }
             });
         }

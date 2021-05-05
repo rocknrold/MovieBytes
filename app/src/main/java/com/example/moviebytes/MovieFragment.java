@@ -1,6 +1,7 @@
 package com.example.moviebytes;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -18,9 +20,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.moviebytes.ShowDetails.MovieDetails;
 import com.example.moviebytes.crud.MovieAdapter;
+import com.example.moviebytes.models.Actor;
 import com.example.moviebytes.models.Movie;
 
 import org.json.JSONArray;
@@ -40,6 +44,7 @@ public class MovieFragment extends Fragment implements MovieAdapter.OnMovieClick
     private final String getAllMovies = "http://192.168.0.26:8000/api/film/all";
     private List<Movie> movieList = new ArrayList<>();
     private RecyclerView rvMovies;
+    private MovieAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +89,7 @@ public class MovieFragment extends Fragment implements MovieAdapter.OnMovieClick
                         e.printStackTrace();
                     }
                 }
-                MovieAdapter adapter = new MovieAdapter(cont, movieList);
+                adapter = new MovieAdapter(cont, movieList);
                 rvMovies.setAdapter(adapter);
                 rvMovies.setLayoutManager(new LinearLayoutManager(cont));
                 adapter.setOnMovieClickListener(MovieFragment.this);
@@ -113,5 +118,47 @@ public class MovieFragment extends Fragment implements MovieAdapter.OnMovieClick
         Movie movie = movieList.get(position);
         intent.putExtra("movie_id", movie.getMovie_id());
         startActivity(intent);
+    }
+
+    @Override
+    public void OnMovieItemLongClick(int position) {
+        Movie mo = movieList.get(position);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(getContext())
+                .setTitle("DELETE")
+                .setMessage("Do you want to delete this movie?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        RequestQueue queue = Volley.newRequestQueue(getContext());
+                        String url = getString(R.string.BASE_URL)+"film/".concat(String.valueOf(mo.getMovie_id()));
+                        StringRequest request = new StringRequest(Request.Method.DELETE, url, response -> {
+                            try {
+                                JSONObject movieDelete = new JSONObject(response);
+                                if(movieDelete.getInt("status") == 200){
+                                    movieList.remove(position);
+                                    adapter.notifyItemRemoved(position);
+                                    Toast.makeText(getContext(), movieDelete.getString("success"), Toast.LENGTH_LONG).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }, error -> {
+                            error.printStackTrace();
+                        }){
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> headers = new HashMap<>();
+                                headers.put("Authorization", "Bearer "+ LoginPreference.getInstance(getActivity()).getString("access_token", null));
+                                System.out.println(headers);
+                                return headers;
+                            }
+                        };
+                        queue.add(request);
+                    }
+                })
+                .setNegativeButton("No", (dialog1, which) -> dialog1.dismiss())
+                .create();
+
+        dialog.show();
     }
 }

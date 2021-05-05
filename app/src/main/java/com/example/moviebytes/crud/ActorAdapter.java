@@ -1,7 +1,6 @@
 package com.example.moviebytes.crud;
 
 import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +21,11 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ActorHolder>
     private final Context cont;
     private final List<Actor> actors;
     private OnActorClickListener actorListener;
+    private String public_url;
 
     public interface OnActorClickListener {
         void OnActorItemClick(int position);
+        void OnActorLongClick(int position);
     }
 
     public void setOnActorClickListener(OnActorClickListener listener) {
@@ -34,6 +35,7 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ActorHolder>
     public ActorAdapter(Context cont, List<Actor> actors) {
         this.cont = cont;
         this.actors = actors;
+        this.public_url = cont.getString(R.string.PUBLIC_URL);
     }
 
     @NonNull
@@ -50,7 +52,7 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ActorHolder>
         holder.tvActorName.setText(ac.getName());
         holder.tvActorNote.setText(ac.getNote());
 
-        Picasso.get().load(ac.getPoster()).fit().centerCrop().into(holder.ivActorPoster);
+        Picasso.get().load(public_url.concat(ac.getPoster())).fit().centerCrop().into(holder.ivActorPoster);
         
     }
 
@@ -67,7 +69,7 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ActorHolder>
             super(itemView);
 
             tvActorName = itemView.findViewById(R.id.tvActorName);
-            tvActorNote = itemView.findViewById(R.id.tvActorNote);
+            tvActorNote = itemView.findViewById(R.id.tvProdEmail);
             ivActorPoster = itemView.findViewById(R.id.ivActorPoster);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +83,20 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ActorHolder>
                     }
                 }
             });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(actorListener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            actorListener.OnActorLongClick(position);
+                        }
+                    }
+                    return true;
+                }
+            });
+
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.moviebytes;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,9 +15,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.moviebytes.crud.ActorActivity;
 import com.example.moviebytes.crud.MovieActivity;
+import com.example.moviebytes.crud.ProducerActivity;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 //      Setup the navigation menu to listen on item click inside the drawer
         NavigationView nav_view = findViewById(R.id.nav_view);
         nav_view.setNavigationItemSelectedListener(this::onMenuItemSelected);
+        View header = nav_view.getHeaderView(0);
+        TextView user = (TextView) header.findViewById(R.id.user);
+        user.setText(logPref.getString("email",logPref.getString("guest", "no email")));
 
 //       set initial fragment to be loaded on the activity
 //        and saveinstances for incase of the change in orientation
@@ -55,7 +62,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//  respond to the item selected inside the drawer,
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    //  respond to the item selected inside the drawer,
 //  just a simple switch statement to get the id of selected menu item
     private boolean onMenuItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -66,8 +78,16 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_holder, new ActorFragment()).commit();
                 break;
             case R.id.crudMovie:
-                Intent intent = new Intent(getApplicationContext(), MovieActivity.class);
-                startActivity(intent);
+                Intent movie = new Intent(getApplicationContext(), MovieActivity.class);
+                startActivity(movie);
+                break;
+            case R.id.crudActor:
+                Intent actor = new Intent(getApplicationContext(), ActorActivity.class);
+                startActivity(actor);
+                break;
+            case R.id.crudProducer:
+                Intent prod = new Intent(getApplicationContext(), ProducerActivity.class);
+                startActivity(prod);
                 break;
             case R.id.logout:
                 logout();
@@ -100,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         logPref.clearPref();
                         Intent login = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(login);
+                        finish();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
